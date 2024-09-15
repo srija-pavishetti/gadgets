@@ -19,24 +19,20 @@ const { connectToDB } = require("./database/db");
 const server = express();
 
 // Database connection
-connectToDB();
+connectToDB().then(() => console.log('Connected to database')).catch(err => console.error('Database connection error:', err));
 
-// CORS configuration
-const corsOptions = {
-    origin: process.env.ORIGIN, // Replace with the frontend URL
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Allowed methods
-    credentials: true, // Enable cookies and authorization headers
-    exposedHeaders: ['X-Total-Count'], // Expose custom headers
-};
-
-server.use(cors(corsOptions));
-
-// Middleware setup
+// Middlewares
+server.use(cors({
+    origin: process.env.ORIGIN,
+    credentials: true,
+    exposedHeaders: ['X-Total-Count'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE']
+}));
 server.use(express.json());
 server.use(cookieParser());
 server.use(morgan("tiny"));
 
-// Route Middleware
+// Routes
 server.use("/auth", authRoutes);
 server.use("/users", userRoutes);
 server.use("/products", productRoutes);
@@ -48,18 +44,18 @@ server.use("/address", addressRoutes);
 server.use("/reviews", reviewRoutes);
 server.use("/wishlist", wishlistRoutes);
 
-// Basic route for testing
+// Health Check Route
 server.get("/", (req, res) => {
-    res.status(200).json({ message: 'Server is running' });
+    res.status(200).json({ message: 'running' });
 });
 
-// Error handling middleware (optional but recommended)
+// Global Error Handling Middleware
 server.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start the server
+// Start Server
 server.listen(8000, () => {
     console.log('Server [STARTED] ~ http://localhost:8000');
 });
