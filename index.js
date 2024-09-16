@@ -23,8 +23,8 @@ connectToDB().then(() => console.log('Connected to database')).catch(err => cons
 
 // Middlewares
 server.use(cors({
-    origin: process.env.ORIGIN,
     credentials: true,
+    origin: process.env.ORIGIN,
     exposedHeaders: ['X-Total-Count'],
     methods: ['GET', 'POST', 'PATCH', 'DELETE']
 }));
@@ -56,6 +56,8 @@ server.use((err, req, res, next) => {
 });
 
 // Start Server
-server.listen(8000, () => {
-    console.log('Server [STARTED] ~ http://localhost:8000');
+const PORT = process.env.PORT || 8000;
+server.listen(PORT, () => {
+    console.log(`Server [STARTED] ~ http://localhost:${PORT}`);
 });
+
